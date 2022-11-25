@@ -1,4 +1,4 @@
-package constants
+package utilities
 
 var ErrorCodes = map[string]string{
 	"OK":                           "SUCCESS",
