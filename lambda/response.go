@@ -1,4 +1,4 @@
-package responses
+package lambda
 
 import (
 	"encoding/json"
@@ -7,6 +7,8 @@ import (
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/freshket/go-utilities/constants"
+	"github.com/freshket/go-utilities/exceptions"
 )
 
 type Response struct {
@@ -38,7 +40,7 @@ func CreateResponse(statusCode int, payload interface{}) events.APIGatewayProxyR
 
 func Ok(message string, payload interface{}) events.APIGatewayProxyResponse {
 	return CreateResponse(http.StatusOK, Response{
-		Status:  OK,
+		Status:  constants.OK,
 		Message: message,
 		Data:    payload,
 	})
@@ -53,9 +55,9 @@ func OkWithCode(statusCode int, message string, payload interface{}) events.APIG
 }
 
 func Fail(err error) events.APIGatewayProxyResponse {
-	var appErr *ApplicationError
+	var appErr *exceptions.ApplicationError
 	if errors.As(err, &appErr) {
-		return CreateResponse(GetHttpStatusForCode(appErr.Code), ErrorResponse{
+		return CreateResponse(exceptions.GetHttpStatusForCode(appErr.Code), ErrorResponse{
 			Status: appErr.Code,
 			Error: ErrorDetail{
 				Message: appErr.Message,
@@ -65,9 +67,9 @@ func Fail(err error) events.APIGatewayProxyResponse {
 	}
 
 	return CreateResponse(http.StatusInternalServerError, ErrorResponse{
-		Status: UNEXPECTED_EXCEPTION,
+		Status: constants.UNEXPECTED_EXCEPTION,
 		Error: ErrorDetail{
-			Message: "unhandled exception",
+			Message: constants.DEFAULT_ERROR_MESSAGE,
 			Stack:   err.Error(),
 		},
 	})
