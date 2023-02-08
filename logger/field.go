@@ -1,4 +1,4 @@
-package lxg
+package logger
 
 import (
 	"encoding/json"
